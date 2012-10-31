@@ -1,0 +1,63 @@
+/* 
+    Document   : main
+    Created on : 30/10/2012, 23:00:32
+    Author     : CarlosAugusto
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+root { 
+    display: block;
+}
+span.square{
+    margin: 0px;
+    height: 15px;
+    width: 15px;
+    border: solid black;
+    border-width: 1px;
+    display: block;
+    float:left;
+}
+span.square_player{
+    margin: 0px;
+    height: 15px;
+    width: 15px;
+    border: solid black;
+    border-width: 1px;
+    display: block;
+    float:left;
+    background-color:red;
+}
+span.square_posto{
+    margin: 0px;
+    height: 15px;
+    width: 15px;
+    border: solid black;
+    border-width: 1px;
+    display: block;
+    float:left;
+    background-color:yellow;
+}
+span.square_cidade{
+    margin: 0px;
+    height: 15px;
+    width: 15px;
+    border: solid black;
+    border-width: 1px;
+    display: block;
+    float:left;
+    background-color:green;
+}
+span.square_wall{
+    margin: 0px;
+    height: 15px;
+    width: 15px;
+    border: solid black;
+    border-width: 1px;
+    display: block;
+    float:left;
+    background-color:grey;
+}
+.clear{
+    clear:both;
+}
