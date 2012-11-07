@@ -79,20 +79,20 @@ test( "Test Accessible ", function() {
 
 test( "Test Tipo No", function() {
   var objNo = new nodeBordQueue(2,2,2);
-  objNo.setTipo(0)
+  objNo.setTipoNo(0)
   equal( objNo.getTipoNo(), 0, "Valor esperado era '0' " );
 });
 
 test( "Test Tipo No", function() {
   var objNo = new nodeBordQueue(2,2,2);
-  objNo.setTipo(0)
+  objNo.setTipoNo(0)
   equal( objNo.getTipoNo(), 0, "Valor esperado era '0' " );
-  objNo.setTipo(1)
+  objNo.setTipoNo(1)
   equal( objNo.getTipoNo(), 1, "Valor esperado era '1' " );
-  objNo.setTipo(2)
+  objNo.setTipoNo(2)
   equal( objNo.getTipoNo(), 2, "Valor esperado era '2' " );
-  objNo.setTipo(3)
+  objNo.setTipoNo(3)
   equal( objNo.getTipoNo(), 3, "Valor esperado era '3' " );
-  objNo.setTipo(4)
+  objNo.setTipoNo(4)
   equal( objNo.getTipoNo(), 4, "Valor esperado era '4' " );
 });

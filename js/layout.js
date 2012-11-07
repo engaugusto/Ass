@@ -1,11 +1,14 @@
 var tamMatrix = 15;//matrix quadrada(total 30)
+var matrixMapa = [];
 
 setLayout = function(divName){
     var matrixSpan = '';
     var i,j;
     for(i = 0; i < tamMatrix; i++){
+        matrixMapa[i] = []
         for(j = 0; j < tamMatrix; j++){
             matrixSpan += "<span class='square' id='spn{0}_{1}'>&nbsp;</span>".format(i,j);
+            matrixMapa[i][j] = 0;
         }
         matrixSpan += "<div class='clear'/>"
     }
@@ -47,6 +50,11 @@ setWall = function(objWall){
         //objeto a trocar
         //Se tem espaço a direita
         
+        //updating map
+        matrixMapa[lin][col] = 4;
+        matrixMapa[lin][col+1] = 4;
+        matrixMapa[lin][col+2] = 4;
+        
         vetAlterarClasse.push($('#spn{0}'.format(linCol)));
         vetAlterarClasse.push($('#spn{0}_{1}'.format(lin,col+1)));
         if(col <= 12){
@@ -58,6 +66,11 @@ setWall = function(objWall){
             });   
         }
     }else{ //vertical
+        
+        matrixMapa[lin][col] = 4;
+        matrixMapa[lin+1][col] = 4;
+        matrixMapa[lin+2][col] = 4;
+        
         vetAlterarClasse.push($('#spn{0}'.format(linCol)));
         vetAlterarClasse.push($('#spn{0}_{1}'.format(lin+1,col)));
         if(lin <= 12){
@@ -85,14 +98,24 @@ SetPontos = function(){
         
         objSquare =  $('.square')[randomNum];
         
+        var linCol = $(objSquare).attr('id').replace('spn','');
+        var splitLinCol = linCol.split('_')
+        var lin = parseInt(splitLinCol[0]);
+        var col = parseInt(splitLinCol[1]);
+        
+        //0 normal, 1 - pontoInicial, 2 - pontoFinal, 3 - Posto, 4 - Inacessivel
+        
         //Set Player
         if(i ==0){
+            matrixMapa[lin][col] = 1;
             $(objSquare).attr('class','square square_player');
         }
         if(i ==1){
+            matrixMapa[lin][col] = 3;
             $(objSquare).attr('class','square square_posto');
         }
         if(i ==2){
+            matrixMapa[lin][col] = 2;
             $(objSquare).attr('class','square square_cidade');
         }
         i++;

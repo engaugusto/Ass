@@ -133,5 +133,73 @@ test( "Test Find Destination Function Fail", function() {
 });
 
 
+test(' Map print', function(){
+    setLayout('tst')
+    //console.log(matrixMapa)
+    
+    equal(true,true, 'Esperado true')
+   //tst 
+});
 
 
+test(' Map set Test', function(){
+    var pontoANode = new nodeBordQueue(1,2,3)
+    var pontoBNode = new nodeBordQueue(2,4,7)
+    var pontoCNode = new nodeBordQueue(3,5,9)  
+    
+    var aSearch = new ASearch(pontoANode,pontoBNode,pontoCNode);
+    aSearch.setMap(matrixMapa, 15)
+    
+    notEqual(aSearch.getMap(),null, 'Esperado não nulo')
+    equal(aSearch.getMapSize(),15, 'Esperado 15')
+   //tst 
+});
+
+test(' Test Find Vizinhos', function(){
+    var pontoANode = new nodeBordQueue(1,1,1)
+    var pontoBNode = new nodeBordQueue(2,2,2)
+    var pontoCNode = new nodeBordQueue(3,2,1)  
+    
+    var aSearch = new ASearch(pontoANode,pontoBNode,pontoCNode);
+    var size = 3;
+    var mapa = []
+    for(var i = 0; i < size; i++){
+        mapa[i] = []
+        for(var j = 0; j < size; j++){
+            mapa[i][j] = 4;
+        }
+    }
+    mapa[0][1] = 0;
+    mapa[1][0] = 0;
+    mapa[1][1] = 1;
+    aSearch.setMap(mapa, Math.pow(size,2))
+    
+    var ret = aSearch.GetVizinhos(pontoANode);
+    
+    equal($(ret).size(),2, 'Esperado 2');
+});
+
+
+test(' Test Find Vizinhos 2', function(){
+    var pontoANode = new nodeBordQueue(1,1,1)
+    var pontoBNode = new nodeBordQueue(2,2,2)
+    var pontoCNode = new nodeBordQueue(3,2,1)  
+    
+    var aSearch = new ASearch(pontoANode,pontoBNode,pontoCNode);
+    var size = 9;
+    var mapa = []
+    for(var i = 0; i < size; i++){
+        mapa[i] = []
+        for(var j = 0; j < size; j++){
+            mapa[i][j] = 4;
+        }
+    }
+    mapa[1][2] = 0;
+    mapa[2][1] = 0;
+    mapa[2][2] = 1;
+    aSearch.setMap(mapa, Math.pow(size,2))
+    
+    var ret = aSearch.GetVizinhos(pontoANode);
+    
+    equal($(ret).size(),2, 'Esperado 2');
+});
