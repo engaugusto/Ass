@@ -6,15 +6,35 @@
 nodeBordQueue = (function(){
     var arcos = null;
     var id = null;
-    var val = null;
+    var posX = null;
+    var posY = null;
+    var realCost = 0;
+    var heuristic = 0;
+   
    
     /*Gets and Sets*/
     nodeBordQueue.prototype.getId = function(){
         return this.id;
     }
-    nodeBordQueue.prototype.getVal = function(){
-        return this.val;
+    nodeBordQueue.prototype.getPosX = function(){
+        return this.posX;
     }
+    nodeBordQueue.prototype.getPosY = function(){
+        return this.posY;
+    }
+    nodeBordQueue.prototype.getRealCost = function(){
+        return this.realCost;
+    }
+    nodeBordQueue.prototype.setRealCost = function(value){
+        this.realCost = value;
+    }
+    nodeBordQueue.prototype.getHeuristic = function(){
+        return this.heuristic;
+    }
+    nodeBordQueue.prototype.setHeuristic = function(value){
+        this.heuristic = value;
+    }
+    
    
     /*Private Function*/
     getIndiceArrayById = function(noId){
@@ -31,10 +51,11 @@ nodeBordQueue = (function(){
     }
     
     /*Construtor*/
-    function nodeBordQueue(id, val){
+    function nodeBordQueue(id, posX, posY){
         this.arcos = new Array();
         this.id = id;
-        this.val = val;
+        this.posX = posX;
+        this.posY = posY;
     }
     
     /*Public Function*/
