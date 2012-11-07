@@ -16,37 +16,122 @@ test( "Test Constructor parameters", function() {
   equal( aSearch.getPontoPosto(), pontoCNode, "Valor esperado era o objeto nodeBordQueue " );
 });
 
-test( "Test Add If Not Exists Fail", function() {
+test( "Test Queue Add If Not Exists Add", function() {
     var pontoANode = new nodeBordQueue(1,2,3)
     var pontoBNode = new nodeBordQueue(2,4,7)
     var pontoCNode = new nodeBordQueue(3,5,9)  
     
     var aSearch = new ASearch(pontoANode,pontoBNode,pontoCNode);
     
-    var pontoExistente = pontoANode;
-    
-    aSearch.getQueue().push(pontoExistente)
-    
-    var oldLength = $(aSearch.getQueue()).size();
-    
-    aSearch.AddIfDontExists(pontoExistente)
-    
-    equal( oldLength, $(aSearch.getQueue()).size(), "Valor esperado era Count + 1" );
-});
-
-test( "Test Add If Not Exists Add", function() {
-    var pontoANode = new nodeBordQueue(1,2,3)
-    var pontoBNode = new nodeBordQueue(2,4,7)
-    var pontoCNode = new nodeBordQueue(3,5,9)  
-    
-    var aSearch = new ASearch(pontoANode,pontoBNode,pontoCNode);
-    
-    var novoPonto = new nodeBordQueue(3,5,6);
+    var novoPonto = new nodeBordQueue(5,5,6);
     
     var oldLength = $(aSearch.getQueue()).size();
     
     aSearch.AddIfDontExists(novoPonto)
     
-    equal( oldLength+1, $(aSearch.getQueue()).size(), "Valor esperado era Count + 1" );
+    equal( $(aSearch.getQueue()).size(), oldLength+1, "Valor esperado era Count + 1" );
 });
+
+
+test( "Test ClosedQueue Add If Not Exists Fail", function() {
+    var pontoANode = new nodeBordQueue(1,2,3)
+    var pontoBNode = new nodeBordQueue(2,4,7)
+    var pontoCNode = new nodeBordQueue(3,5,9)  
+    
+    var aSearch = new ASearch(pontoANode,pontoBNode,pontoCNode);
+    
+    var closedPonto = new nodeBordQueue(3,5,6);
+    aSearch.getClosedQueue().push(closedPonto);
+    var oldLength = $(aSearch.getQueue()).size();
+    
+    aSearch.AddIfDontExists(closedPonto)
+    
+    equal( oldLength, $(aSearch.getQueue()).size(), "Valor esperado era Count + 1" );
+    
+});
+
+test( "Test AddIfNotExists Node not accessible", function() {
+    var pontoANode = new nodeBordQueue(1,2,3)
+    var pontoBNode = new nodeBordQueue(2,4,7)
+    var pontoCNode = new nodeBordQueue(3,5,9)  
+    
+    var aSearch = new ASearch(pontoANode,pontoBNode,pontoCNode);
+    
+    var closedPonto = new nodeBordQueue(3,5,6);
+    
+    var oldLength = $(aSearch.getQueue()).size();
+    
+    closedPonto.setAccessible(false);
+    
+    aSearch.AddIfDontExists(closedPonto)
+    
+    equal( oldLength, $(aSearch.getQueue()).size(), "Valor esperado era 1" );
+    
+});
+
+test( "Test EndOfList Equal Function", function() {
+    var pontoANode = new nodeBordQueue(1,2,3)
+    var pontoBNode = new nodeBordQueue(2,4,7)
+    var pontoCNode = new nodeBordQueue(3,5,9)  
+    
+    var aSearch = new ASearch(pontoANode,pontoBNode,pontoCNode);
+    equal( 0, $(aSearch.getQueue()).size(), "Valor esperado era 0" );
+});
+
+test( "Test EndOfList Fail Function", function() {
+    var pontoANode = new nodeBordQueue(1,2,3)
+    var pontoBNode = new nodeBordQueue(2,4,7)
+    var pontoCNode = new nodeBordQueue(3,5,9)  
+    
+    var aSearch = new ASearch(pontoANode,pontoBNode,pontoCNode);
+    var closedPonto = new nodeBordQueue(3,5,6);
+    aSearch.getClosedQueue().push(closedPonto);
+    
+    notEqual( 1, $(aSearch.getQueue()).size(), "Valor esperado era 0" );
+});
+
+test( "Test PassouPeloPosto Function", function() {
+    var pontoANode = new nodeBordQueue(1,2,3)
+    var pontoBNode = new nodeBordQueue(2,4,7)
+    var pontoCNode = new nodeBordQueue(3,5,9)  
+    
+    var aSearch = new ASearch(pontoANode,pontoBNode,pontoCNode);
+    aSearch.setPassouPeloPosto(true);
+    equal( true, aSearch.getPassouPeloPosto(), "Valor esperado era 0" );
+});
+
+test( "Test Find Destination Function", function() {
+    var pontoANode = new nodeBordQueue(1,2,3)
+    var pontoBNode = new nodeBordQueue(2,4,7)
+    var pontoCNode = new nodeBordQueue(3,5,9)  
+    
+    var aSearch = new ASearch(pontoANode,pontoBNode,pontoCNode);
+    aSearch.setPassouPeloPosto(true);
+    
+    var novoPonto = new nodeBordQueue(5,5,6);
+    novoPonto.setTipoNo(2);
+    aSearch.setCurrentNode(novoPonto)
+    
+    equal( true, aSearch.FoundDestination(), "Valor esperado era true" );
+});
+
+
+test( "Test Find Destination Function Fail", function() {
+    var pontoANode = new nodeBordQueue(1,2,3)
+    var pontoBNode = new nodeBordQueue(2,4,7)
+    var pontoCNode = new nodeBordQueue(3,5,9)  
+    
+    var aSearch = new ASearch(pontoANode,pontoBNode,pontoCNode);
+    aSearch.setPassouPeloPosto(true);
+    
+    var novoPonto = new nodeBordQueue(5,5,6);
+    //Não é final
+    //novoPonto.setTipo(2);
+    aSearch.setCurrentNode(novoPonto)
+    
+    notEqual( true, aSearch.FoundDestination(), "Valor esperado era false" );
+});
+
+
+
 

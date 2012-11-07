@@ -6,11 +6,21 @@ ASearch = (function(){
     /*Var*/
     var queue;
     var closedQueue;
+    var currentNode = null;
+    var passouPeloPosto = false;
     
     var pontoInicial = null;
     var pontoIni, pontoFim, pontoPosto;
     
     /*Properties*/
+    ASearch.prototype.getCurrentNode = function(){
+        return this.currentNode;
+    }
+    
+    ASearch.prototype.setCurrentNode = function(value){
+        this.currentNode = value;
+    }
+    
     ASearch.prototype.getPontoIni = function(){
         return this.pontoIni;
     }
@@ -31,13 +41,27 @@ ASearch = (function(){
         return this.closedQueue;
     }
     
+    ASearch.prototype.getPassouPeloPosto = function(){
+        return this.passouPeloPosto;
+    }
+    
+    ASearch.prototype.setPassouPeloPosto = function(value){
+        this.passouPeloPosto = value;
+    }
+    
     /*Construtor*/
     function ASearch(pontoIni, pontoFim, pontoPosto){
         this.queue = [];
         this.closedQueue = [];
+        this.passouPeloPosto = false;
         
+        pontoIni.setTipoNo(1);
         this.pontoIni = pontoIni;
+        
+        pontoFim.setTipoNo(2);
         this.pontoFim = pontoFim;
+        
+        pontoPosto.setTipoNo(3);
         this.pontoPosto = pontoPosto;
     }
         
@@ -46,20 +70,22 @@ ASearch = (function(){
         //add initial square
         
         
-        queue.push(this.pontoIni)
-        var currentNode = null;
+        this.queue.push(this.pontoIni)
+        
         var vizinhos = null;
         return;
         do{
              //getting the current Node
-             currentNode = queue.shift()    
+             this.currentNode = this.queue.shift()    
              //moving to the closed list
-             closedQueue.push(currentNode)
-             vizinhos = currentNode.getVizinhos()
+             this.closedQueue.push(this.currentNode)
+             //TODO: Parei Aqui
+             vizinhos = this.currentNode.getVizinhos()
              
+             
+             //vizinhos.length = 8
              for(var i = 0; i < vizinhos.length; i++){
                  AddIfDontExists(vizinhos[i])
-                 
              }
             
         }while(FoundDestination() || EndOfList());
@@ -67,18 +93,31 @@ ASearch = (function(){
     }
     
     ASearch.prototype.FoundDestination = function(){
-        
+        return this.passouPeloPosto == true && this.currentNode.getTipoNo() == 2;
     }
     
     ASearch.prototype.EndOfList = function(){
-        
+        return ($(this.queue).size() == 0);
     }
     
     ASearch.prototype.AddIfDontExists = function(node){
-        if($.inArray(node, this.queue) != -1)
+        if(!node.getAccessible())
+            return;
+        //verify if doesn't exists in the closed list
+        if($.inArray(node, this.closedQueue) != -1)
             return
-        //verify if doesn't exists'
-        this.queue.push(node)
+        //if doesn't exists add in the queue
+        if($.inArray(node, this.queue) == -1)
+            this.queue.push(node)
+        
+        //TODO: (Leo) Continuar...
+        return;
+        if(this.node.getRealCost() < this.currentNode.getRealCost())
+        {
+               
+        }
+        //add queue
+        
         //vizinhos[i].setParent(currentNode)
     }
     

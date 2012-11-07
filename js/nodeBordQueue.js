@@ -10,7 +10,8 @@ nodeBordQueue = (function(){
     var posY = null;
     var realCost = 0;
     var heuristic = 0;
-   
+    var accessible;
+    var tipoNo = 0; //0 normal, 1 - pontoInicial, 2 - pontoFinal, 3 - Posto, 4 - Inacessivel
    
     /*Gets and Sets*/
     nodeBordQueue.prototype.getId = function(){
@@ -34,7 +35,18 @@ nodeBordQueue = (function(){
     nodeBordQueue.prototype.setHeuristic = function(value){
         this.heuristic = value;
     }
-    
+    nodeBordQueue.prototype.getAccessible = function(){
+        return this.accessible;
+    }
+    nodeBordQueue.prototype.setAccessible = function(value){
+        this.accessible = value;
+    }
+    nodeBordQueue.prototype.getTipoNo = function(){
+        return this.tipoNo;
+    }
+    nodeBordQueue.prototype.setTipoNo = function(value){
+        this.tipoNo = value;
+    }
    
     /*Private Function*/
     getIndiceArrayById = function(noId){
@@ -52,6 +64,7 @@ nodeBordQueue = (function(){
     
     /*Construtor*/
     function nodeBordQueue(id, posX, posY){
+        this.accessible = true;
         this.arcos = new Array();
         this.id = id;
         this.posX = posX;
