@@ -203,3 +203,28 @@ test(' Test Find Vizinhos 2', function(){
     
     equal($(ret).size(),2, 'Esperado 2');
 });
+
+test(' Test Find Best Path', function(){
+    //findBestSearch
+    var pontoANode = new nodeBordQueue(1,1,1)
+    var pontoBNode = new nodeBordQueue(2,2,2)
+    var pontoCNode = new nodeBordQueue(3,2,1)  
+    
+    var aSearch = new ASearch(pontoANode,pontoBNode,pontoCNode);
+    var size = 9;
+    var mapa = []
+    for(var i = 0; i < size; i++){
+        mapa[i] = []
+        for(var j = 0; j < size; j++){
+            mapa[i][j] = 4;
+        }
+    }
+    mapa[1][2] = 0;
+    mapa[2][1] = 0;
+    mapa[2][2] = 1;
+    aSearch.setMap(mapa, Math.pow(size,2));
+    
+    aSearch.findBestPath()
+    
+    equal(true,true)
+});

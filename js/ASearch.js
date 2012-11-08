@@ -79,34 +79,94 @@ ASearch = (function(){
         pontoPosto.setTipoNo(3);
         this.pontoPosto = pontoPosto;
     }
-        
+    
     /*Public Function*/
+    ASearch.prototype.calculateRealCost = function(node){
+        //Manhattan Style
+        var posX = node.getPosX()
+        var posY = node.getPosY()
+        
+        var posFinalX = 0
+        var posFinalY = 0
+        var realCost = 0
+        if(!passouPeloPosto){
+            posFinalX = this.pontoPosto.getPosX()
+            posFinalY = this.pontoPosto.getPosY()
+            
+        }else{
+            posFinalX = this.pontoFim.getPosX()
+            posFinalX = this.pontoFim.getPosY()
+        }
+        
+        realCost = Math.abs(posFinalX-posX)+Math.abs(posFinalY-posY)
+        
+        var heuristic = 10000000000;
+        if(passouPeloPosto)
+            heuristic = 0;
+        
+        node.setRealCost(realCost)
+        node.setHeuristic(heuristic)
+    }
+    
     ASearch.prototype.findBestPath = function(){
         //add initial square
-        
-        
         this.queue.push(this.pontoIni)
         
         var vizinhos = null;
-        return;
         do{
              //getting the current Node
              this.currentNode = this.queue.shift()    
              //moving to the closed list
              this.closedQueue.push(this.currentNode)
              //TODO: Parei Aqui
-             vizinhos = GetVizinhos(this.currentNode)
+             vizinhos = this.GetVizinhos(this.currentNode)
              
              //vizinhos.length = 8
              for(var i = 0; i < vizinhos.length; i++){
-                 AddIfDontExists(vizinhos[i])
+                 var selected = vizinhos[i]
+                 
+                 //TODO: Add If Dont Exists ?
+                 //this.AddIfDontExists(this.map[selected.getPosX()][selected.getPosY()])
              }
-            this.closedQueue.push(this.currentNode);
+             //droping
+            var dropMinusHeuristic = getMinusHeuristic();
+            //check Neighbourhood 
+            vizinhos = this.GetVizinhos(dropMinusHeuristic)
             
+            for(var i = 0; i < vizinhos.length; i++){
+                //Check the G
+                if(vizinhos[i].getRealCost() < this.currentNode.getRealCost()){
+                   vizinhos[i].clearArcos() 
+                   vizinhos[i].addArco(this.currentNode)
+                   
+                   //Calculate RealCost and Heuristic
+                   calculateRealCost(vizinhos[i])
+                }
+             }
             
         }while(FoundDestination() || EndOfList());
         
+        //Drawing into the Screen
+        var firstNode = null;
+        //firstNode
+        firstNode = this.pontoFim
+        while(firstNode != null){
+            firstNode = firstNode.getArcos()[0]
+        }
+        console.log(firstNode)
     }
+    
+    ASearch.prototype.getMinusHeuristic = function(){
+        var minusNode = this.queue[0];
+        var selected = 0;
+        for(var i = 0; i < this.queue; i++){
+            if(minusNode.getTotalCost() > this.queue[i].getTotalCost()){
+                selected = i;
+            }
+        }
+        return this.queue[selected]
+    }
+    
     
     ASearch.prototype.FoundDestination = function(){
         return this.passouPeloPosto == true && this.currentNode.getTipoNo() == 2;
@@ -131,6 +191,9 @@ ASearch = (function(){
         //var jNode = (size-(size-posY))-1;
         
         //getting the 4 near
+        //
+        //calculate realCost and Heuristic foreach Node
+        
         if(iNode+1<=size)
             if(this.map[iNode+1][jNode]!=4)
                 vizinhos.push(this.map[iNode+1][jNode]);
