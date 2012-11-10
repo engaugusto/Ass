@@ -62,6 +62,13 @@ ASearch = (function(){
     ASearch.prototype.setMap = function(mapValue, mapSize){
         this.map = mapValue;
         this.mapSize = mapSize;
+        this.SetInitialPoints()
+    }
+    
+    ASearch.prototype.SetInitialPoints = function(){
+        this.map[this.pontoIni.getPosX()][this.pontoIni.getPosY()] = this.pontoIni.getTipoNo();
+        this.map[this.pontoFim.getPosX()][this.pontoFim.getPosY()] = this.pontoFim.getTipoNo();
+        this.map[this.pontoPosto.getPosX()][this.pontoPosto.getPosY()] = this.pontoPosto.getTipoNo();
     }
     
     /*Construtor*/
@@ -89,35 +96,54 @@ ASearch = (function(){
         var posFinalX = 0
         var posFinalY = 0
         var realCost = 0
-        if(!passouPeloPosto){
+        if(!this.passouPeloPosto){
             posFinalX = this.pontoPosto.getPosX()
             posFinalY = this.pontoPosto.getPosY()
             
         }else{
             posFinalX = this.pontoFim.getPosX()
-            posFinalX = this.pontoFim.getPosY()
+            posFinalY = this.pontoFim.getPosY()
         }
         
-        realCost = Math.abs(posFinalX-posX)+Math.abs(posFinalY-posY)
+        realCost = posX-posFinalX+posY-posFinalY
         
         var heuristic = 10000000000;
-        if(passouPeloPosto)
-            heuristic = 0;
-        
+        if(this.passouPeloPosto)
+            heuristic = 1;
+        else
+        {
+          if(this.pontoPosto.getPosX() == node.getPosX() 
+             && this.pontoPosto.getPosY() == node.getPosY())
+                heuristic = 1;
+        }
         node.setRealCost(realCost)
-        node.setHeuristic(heuristic)
+        node.setHeuristic(realCost * heuristic)
+    }
+    
+    ASearch.prototype.removeFromQueue = function(node){
+        var index = 0;
+        for(var i =0;i<$(this.queue).size();i++){
+            if(this.queue[i].getId() == node.getId()){
+                index = i;
+            }
+        }
+        this.queue.splice(index,1)
     }
     
     ASearch.prototype.findBestPath = function(){
         //add initial square
         this.queue.push(this.pontoIni)
-        
+        var meldels = 0;
         var vizinhos = null;
         do{
              //getting the current Node
-             this.currentNode = this.queue.shift()    
-             //moving to the closed list
+             this.currentNode = this.getMinusTotalCost() 
+             drawNode2(this.currentNode, 'pink')
+                          //moving to the closed list
              this.closedQueue.push(this.currentNode)
+             
+             this.removeFromQueue(this.currentNode)
+             
              //TODO: Parei Aqui
              vizinhos = this.GetVizinhos(this.currentNode)
              
@@ -126,10 +152,10 @@ ASearch = (function(){
                  var selected = vizinhos[i]
                  
                  //TODO: Add If Dont Exists ?
-                 //this.AddIfDontExists(this.map[selected.getPosX()][selected.getPosY()])
+                 this.AddIfDontExists(selected)
              }
              //droping
-            var dropMinusHeuristic = getMinusHeuristic();
+            var dropMinusHeuristic = this.getMinusRealCost();
             //check Neighbourhood 
             vizinhos = this.GetVizinhos(dropMinusHeuristic)
             
@@ -140,26 +166,61 @@ ASearch = (function(){
                    vizinhos[i].addArco(this.currentNode)
                    
                    //Calculate RealCost and Heuristic
-                   calculateRealCost(vizinhos[i])
+                   this.calculateRealCost(vizinhos[i])
                 }
              }
-            
-        }while(FoundDestination() || EndOfList());
+             if(meldels > 1000){
+                 console.log('mel dels');
+                 break;
+             }
+            meldels=meldels+1;
+            if(this.EndOfList())
+                break;
+        }while(!this.FoundDestination(dropMinusHeuristic));
         
         //Drawing into the Screen
         var firstNode = null;
         //firstNode
-        firstNode = this.pontoFim
+        firstNode = dropMinusHeuristic
         while(firstNode != null){
-            firstNode = firstNode.getArcos()[0]
+            //console.log(firstNode);
+            drawNode(firstNode)
+            firstNode = firstNode.getArcos()[0];
         }
-        console.log(firstNode)
+        //console.log(firstNode);
     }
     
-    ASearch.prototype.getMinusHeuristic = function(){
+    ASearch.prototype.getMinusRealCost = function(){
         var minusNode = this.queue[0];
         var selected = 0;
-        for(var i = 0; i < this.queue; i++){
+        var tmpQueue = this.getValidQueue();
+        for(var i = 0; i < $(tmpQueue).size(); i++){
+            //if (this.closedQueue.find(minusNode))
+                
+            if(minusNode.getRealCost() > tmpQueue[i].getRealCost()){
+                selected = i;
+            }
+        }
+        return tmpQueue[selected];
+    }
+    
+    ASearch.prototype.getValidQueue = function(){
+        var retVar = []
+        if($(this.closedQueue).size() == 0)
+            return this.queue;
+        for (var i = 0; i < $(this.queue).size(); i++){
+            for(var j = i; j < $(this.closedQueue).size(); j++){
+                if(this.queue[i].getId() != this.closedQueue[j].getId() )
+                    retVar.push(this.queue[i])
+            }
+        }
+        return retVar;
+    }
+    
+    ASearch.prototype.getMinusTotalCost = function(){
+        var minusNode = this.queue[0];
+        var selected = 0;
+        for(var i = 0; i < $(this.queue).size(); i++){
             if(minusNode.getTotalCost() > this.queue[i].getTotalCost()){
                 selected = i;
             }
@@ -168,15 +229,21 @@ ASearch = (function(){
     }
     
     
-    ASearch.prototype.FoundDestination = function(){
-        return this.passouPeloPosto == true && this.currentNode.getTipoNo() == 2;
+    ASearch.prototype.FoundDestination = function(node){
+        if(this.passouPeloPosto == true && node.getTipoNo() == 2)
+            console.log('found destination')
+        return this.passouPeloPosto == true && node.getTipoNo() == 2;
     }
     
     ASearch.prototype.EndOfList = function(){
+        if($(this.queue).size() == 0)
+            console.log('final of list')
         return ($(this.queue).size() == 0);
     }
     
     ASearch.prototype.GetVizinhos = function(node){
+        if(node == null)
+            console.log('node==null == fuuu')
         //Finding Neighbourhood 
         var vizinhos = []
         
@@ -195,33 +262,73 @@ ASearch = (function(){
         //calculate realCost and Heuristic foreach Node
         
         if(iNode+1<=size)
-            if(this.map[iNode+1][jNode]!=4)
-                vizinhos.push(this.map[iNode+1][jNode]);
+            if(this.map[iNode+1][jNode]!=4){
+                var ponto = new nodeBordQueue(iNode+1, jNode);
+                ponto.setTipoNo(this.map[iNode+1][jNode])
+                vizinhos.push(ponto);
+            }
         if(iNode-1>=0)
-            if(this.map[iNode-1][jNode]!=4)
-                vizinhos.push(this.map[iNode-1][jNode]);
+            if(this.map[iNode-1][jNode]!=4){
+                var ponto = new nodeBordQueue(iNode-1, jNode);
+                ponto.setTipoNo(this.map[iNode-1][jNode])
+                vizinhos.push(ponto);
+            }
         if(jNode+1<=size)
-            if(this.map[iNode][jNode+1]!=4)
-                vizinhos.push(this.map[iNode][jNode+1]);        
+            if(this.map[iNode][jNode+1]!=4){
+                var ponto = new nodeBordQueue(iNode, jNode+1);
+                ponto.setTipoNo(this.map[iNode][jNode+1])
+                vizinhos.push(ponto);
+            }
         if(jNode-1>=0)
-            if(this.map[iNode][jNode-1]!=4)
-                vizinhos.push(this.map[iNode][jNode-1]);
+            if(this.map[iNode][jNode-1]!=4){
+                var ponto = new nodeBordQueue(iNode, jNode-1);
+                ponto.setTipoNo(this.map[iNode][jNode-1])
+                vizinhos.push(ponto);
+            }
         
         return vizinhos
+    }
+    
+    ASearch.prototype.existsInClosedQueue = function(node){
+        for(var i = 0; i < $(this.closedQueue).size(); i++){
+            if(this.closedQueue[i].getId() == node.getId())
+                return true;
+        }
+        return false;
     }
     
     ASearch.prototype.AddIfDontExists = function(node){
         if(!node.getAccessible())
             return;
         //verify if doesn't exists in the closed list
-        if($.inArray(node, this.closedQueue) != -1)
+        if(this.existsInClosedQueue(node))
             return
+        for(var i = 0; i< $(this.queue).size();i++){
+            if(this.queue[i].getId() == node.getId())
+                return;
+        }
+        
         //if doesn't exists add in the queue
-        if($.inArray(node, this.queue) == -1)
+        if($.inArray(node, this.queue) == -1){
+            this.calculateRealCost(node);
+            //this.currentNode.clearArcos(); 
+            //this.currentNode.addArco(node);        
+            node.clearArcos();
+            node.addArco(this.currentNode);
+            
+            if(this.pontoPosto.getPosX() == node.getPosX() 
+                    && this.pontoPosto.getPosY() == node.getPosY()){
+                this.passouPeloPosto = true;
+                //resetando o coseQueue por causa que pode passar no mesmo ponto na volta
+                //this.closedQueue = []
+            }
+            
+            
             this.queue.push(node)
+        }
         
         //Adicionando o nó pai ao corrente nó
-        node.addArco(this.currentNode);
+        
         
         //TODO: (Leo) Continuar...
         return;

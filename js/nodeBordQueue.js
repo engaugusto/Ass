@@ -14,9 +14,13 @@ nodeBordQueue = (function(){
     var accessible;
     var tipoNo = 0; //0 normal, 1 - pontoInicial, 2 - pontoFinal, 3 - Posto, 4 - Inacessivel
    
+    nodeBordQueue.prototype.getArcos = function(){
+        return this.arcos;
+    }
+   
     /*Gets and Sets*/
     nodeBordQueue.prototype.getId = function(){
-        return this.id;
+        return this.posX+"_"+this.posY;
     }
     nodeBordQueue.prototype.getPosX = function(){
         return this.posX;
@@ -68,10 +72,10 @@ nodeBordQueue = (function(){
     }
     
     /*Construtor*/
-    function nodeBordQueue(id, posX, posY){
+    function nodeBordQueue(posX, posY){
         this.accessible = true;
         this.arcos = new Array();
-        this.id = id;
+        //this.id = id;
         this.posX = posX;
         this.posY = posY;
     }

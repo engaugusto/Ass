@@ -1,4 +1,4 @@
-var tamMatrix = 15;//matrix quadrada(total 30)
+var tamMatrix = 9;//matrix quadrada(total 30)
 var matrixMapa = [];
 
 setLayout = function(divName){
@@ -14,8 +14,18 @@ setLayout = function(divName){
     }
     $('#'+divName).html(matrixSpan);
     
-    buildWalls();
+    //buildWalls();
     SetPontos();
+}
+
+drawNode = function(node){
+    var divName = "spn{0}_{1}".format(node.getPosX(),node.getPosY());
+    $('#'+divName).css('background-color','purple');
+}
+
+drawNode2 = function(node,color){
+    var divName = "spn{0}_{1}".format(node.getPosX(),node.getPosY());
+    $('#'+divName).css('background-color',color);
 }
 
 buildWalls = function(){
@@ -33,7 +43,8 @@ buildWalls = function(){
 
 //Seta a parede a partir de um objeto
 setWall = function(objWall){
-    //console.log(objWall); //Debug
+    console.log(objWall); //DebugobjWall
+    
     //desenhando a parede
     var linCol = $(objWall).attr('id').replace('spn','');
     var splitLinCol = linCol.split('_')
@@ -66,7 +77,9 @@ setWall = function(objWall){
             });   
         }
     }else{ //vertical
-        
+        //console.log('bbbb')
+        //cosole.log(lin)
+        //console.log(col)
         matrixMapa[lin][col] = 4;
         matrixMapa[lin+1][col] = 4;
         matrixMapa[lin+2][col] = 4;
@@ -82,7 +95,9 @@ setWall = function(objWall){
         }
     }
 }
-
+pontoIniPos = []
+pontoFimPos = []
+pontoPostoPos = []
 //Setando ponto inicial e final
 SetPontos = function(){
     var i = 0;
@@ -107,15 +122,31 @@ SetPontos = function(){
         
         //Set Player
         if(i ==0){
+            lin=0;
+            col=0;
+            pontoIniPos[0] = lin
+            pontoIniPos[1] = col
             matrixMapa[lin][col] = 1;
+            objSquare =  $('#spn'+lin+'_'+col)
+            //console.log(objSquare);
             $(objSquare).attr('class','square square_player');
         }
         if(i ==1){
+            lin=4;
+            col=0;
+            pontoPostoPos[0] = lin
+            pontoPostoPos[1] = col
             matrixMapa[lin][col] = 3;
+            objSquare =  $('#spn'+lin+'_'+col)
             $(objSquare).attr('class','square square_posto');
         }
         if(i ==2){
+            lin=2;
+            col=2;
+            pontoFimPos[0] = lin
+            pontoFimPos[1] = col
             matrixMapa[lin][col] = 2;
+            objSquare =  $('#spn'+lin+'_'+col)
             $(objSquare).attr('class','square square_cidade');
         }
         i++;
