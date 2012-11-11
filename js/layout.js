@@ -122,8 +122,8 @@ SetPontos = function(){
         
         //Set Player
         if(i ==0){
-            lin=0;
-            col=0;
+            //lin=8;
+            //col=5;
             pontoIniPos[0] = lin
             pontoIniPos[1] = col
             matrixMapa[lin][col] = 1;
@@ -132,8 +132,8 @@ SetPontos = function(){
             $(objSquare).attr('class','square square_player');
         }
         if(i ==1){
-            lin=4;
-            col=0;
+            //lin=1;
+            //col=5;
             pontoPostoPos[0] = lin
             pontoPostoPos[1] = col
             matrixMapa[lin][col] = 3;
@@ -141,8 +141,8 @@ SetPontos = function(){
             $(objSquare).attr('class','square square_posto');
         }
         if(i ==2){
-            lin=2;
-            col=2;
+            //lin=1;
+            //col=6;
             pontoFimPos[0] = lin
             pontoFimPos[1] = col
             matrixMapa[lin][col] = 2;

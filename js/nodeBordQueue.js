@@ -5,6 +5,7 @@
 /*nodeBordQueue*/
 nodeBordQueue = (function(){
     var arcos = null;
+    var arcos_back = null;
     var id = null;
     var posX = null;
     var posY = null;
@@ -17,6 +18,9 @@ nodeBordQueue = (function(){
     nodeBordQueue.prototype.getArcos = function(){
         return this.arcos;
     }
+    nodeBordQueue.prototype.getArcosBack = function(){
+        return this.arcos_back;
+    }    
    
     /*Gets and Sets*/
     nodeBordQueue.prototype.getId = function(){
@@ -69,12 +73,13 @@ nodeBordQueue = (function(){
         if(findedInd != null)
             return findedInd;
         return null;
-    }
+    }    
     
     /*Construtor*/
     function nodeBordQueue(posX, posY){
         this.accessible = true;
         this.arcos = new Array();
+        this.arcos_back = new Array();
         //this.id = id;
         this.posX = posX;
         this.posY = posY;
@@ -84,6 +89,9 @@ nodeBordQueue = (function(){
     nodeBordQueue.prototype.getArcoCount = function(){
         return this.arcos.length;
     }
+    nodeBordQueue.prototype.getArcoBackCount = function(){
+        return this.arcos_back.length;
+    }    
         
     nodeBordQueue.prototype.procuraNoPorId = function(noId){
         var findedObj = null;
@@ -97,22 +105,49 @@ nodeBordQueue = (function(){
             return findedObj;
         return -1;
     }
+    nodeBordQueue.prototype.procuraNoPorId_Back = function(noId){
+        var findedObj = null;
+        $(this.arcos_back).each(function(ind,obj){
+           if(obj.getId() == noId){
+               findedObj = obj;
+               return false;
+           }
+        });
+        if(findedObj != null)
+            return findedObj;
+        return -1;
+    }    
     
     nodeBordQueue.prototype.addArco = function(novoNo){
         this.arcos.push(novoNo);
         
         return null;
     }
+    nodeBordQueue.prototype.addArco_back = function(novoNo){
+        this.arcos_back.push(novoNo);
+        
+        return null;
+    }    
     nodeBordQueue.prototype.removeArco = function(noId){
         this.arcos.remove(getIndiceArrayById(noId));
         
         return null;
     }
+    nodeBordQueue.prototype.removeArco_Back = function(noId){
+        this.arcos_back.remove(getIndiceArrayById(noId));
+        
+        return null;
+    }    
     nodeBordQueue.prototype.clearArcos = function(){
         this.arcos = new Array();;
         
         return null;
     }
+    nodeBordQueue.prototype.clearArcos_Back = function(){
+        this.arcos_back = new Array();;
+        
+        return null;
+    }    
     
     
     return nodeBordQueue;

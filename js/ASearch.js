@@ -105,15 +105,17 @@ ASearch = (function(){
             posFinalY = this.pontoFim.getPosY()
         }
         
-        realCost = posX-posFinalX+posY-posFinalY
+        realCost = (posX-posFinalX) + (posY-posFinalY)
+        if ( realCost < 0)
+            realCost = realCost * -1;
         
         var heuristic = 10000000000;
         if(this.passouPeloPosto)
             heuristic = 1;
         else
         {
-          if(this.pontoPosto.getPosX() == node.getPosX() 
-             && this.pontoPosto.getPosY() == node.getPosY())
+            if(this.pontoPosto.getPosX() == node.getPosX() 
+                && this.pontoPosto.getPosY() == node.getPosY())
                 heuristic = 1;
         }
         node.setRealCost(realCost)
@@ -136,25 +138,30 @@ ASearch = (function(){
         var meldels = 0;
         var vizinhos = null;
         do{
-             //getting the current Node
-             this.currentNode = this.getMinusTotalCost() 
-             drawNode2(this.currentNode, 'pink')
-                          //moving to the closed list
-             this.closedQueue.push(this.currentNode)
+            //getting the current Node
+            this.currentNode = this.getMinusTotalCost() 
+            drawNode2(this.currentNode, 'pink')
+            //moving to the closed list
+            this.closedQueue.push(this.currentNode)
              
-             this.removeFromQueue(this.currentNode)
+            this.removeFromQueue(this.currentNode)
+            if (this.currentNode.getTipoNo() == this.pontoPosto.getTipoNo())
+            {
+                if (this.existsInClosedQueue(this.currentNode))
+                    this.passouPeloPosto = true
+            }
              
-             //TODO: Parei Aqui
-             vizinhos = this.GetVizinhos(this.currentNode)
+            //TODO: Parei Aqui
+            this.queue = [];
+            vizinhos = this.GetVizinhos(this.currentNode)
              
-             //vizinhos.length = 8
-             for(var i = 0; i < vizinhos.length; i++){
-                 var selected = vizinhos[i]
-                 
-                 //TODO: Add If Dont Exists ?
-                 this.AddIfDontExists(selected)
-             }
-             //droping
+            //vizinhos.length = 8
+            for(var i = 0; i < vizinhos.length; i++){
+                var selected = vizinhos[i]
+                //TODO: Add If Dont Exists ?
+                this.AddIfDontExists(selected)
+            }
+            //droping
             var dropMinusHeuristic = this.getMinusRealCost();
             //check Neighbourhood 
             vizinhos = this.GetVizinhos(dropMinusHeuristic)
@@ -162,17 +169,17 @@ ASearch = (function(){
             for(var i = 0; i < vizinhos.length; i++){
                 //Check the G
                 if(vizinhos[i].getRealCost() < this.currentNode.getRealCost()){
-                   vizinhos[i].clearArcos() 
-                   vizinhos[i].addArco(this.currentNode)
+                    vizinhos[i].clearArcos() 
+                    vizinhos[i].addArco(this.currentNode)
                    
-                   //Calculate RealCost and Heuristic
-                   this.calculateRealCost(vizinhos[i])
+                    //Calculate RealCost and Heuristic
+                    this.calculateRealCost(vizinhos[i])
                 }
-             }
-             if(meldels > 1000){
-                 console.log('mel dels');
-                 break;
-             }
+            }
+            if(meldels > 1000){
+                console.log('mel dels');
+                break;
+            }
             meldels=meldels+1;
             if(this.EndOfList())
                 break;
@@ -180,14 +187,21 @@ ASearch = (function(){
         
         //Drawing into the Screen
         var firstNode = null;
+        var endNode = null;
         //firstNode
-        firstNode = dropMinusHeuristic
-        while(firstNode != null){
+        firstNode = this.pontoIni
+        endNode = dropMinusHeuristic
+        /*while(firstNode != null){
             //console.log(firstNode);
             drawNode(firstNode)
             firstNode = firstNode.getArcos()[0];
-        }
-        //console.log(firstNode);
+        }*/
+        while(endNode != null){
+            //console.log(firstNode);
+            drawNode(endNode)
+            endNode = endNode.getArcosBack()[0];
+        }        
+    //console.log(firstNode);
     }
     
     ASearch.prototype.getMinusRealCost = function(){
@@ -201,20 +215,47 @@ ASearch = (function(){
                 selected = i;
             }
         }
+        //se o ponto for o procurado selecionar o mesmo.
+        for(var j = 0; j < $(tmpQueue).size(); j++){
+            if(this.passouPeloPosto)
+            {
+                if(this.pontoFim.getId() == tmpQueue[j].getId())
+                {
+                    selected = j;
+                }                            
+            }
+            if(!this.passouPeloPosto)
+            {
+                if(this.pontoPosto.getId() == tmpQueue[j].getId())
+                {
+                    selected = j;
+                }                            
+            }            
+        }        
         return tmpQueue[selected];
     }
     
     ASearch.prototype.getValidQueue = function(){
-        var retVar = []
+        var validQueue = []
+        var x = null;
         if($(this.closedQueue).size() == 0)
             return this.queue;
         for (var i = 0; i < $(this.queue).size(); i++){
             for(var j = i; j < $(this.closedQueue).size(); j++){
                 if(this.queue[i].getId() != this.closedQueue[j].getId() )
-                    retVar.push(this.queue[i])
+                {
+                    x = false;
+                }
+                else
+                {
+                    x = true;
+                }
             }
+            if (!x)
+                validQueue.push(this.queue[i]);
+            x = false;
         }
-        return retVar;
+        return validQueue;
     }
     
     ASearch.prototype.getMinusTotalCost = function(){
@@ -225,6 +266,24 @@ ASearch = (function(){
                 selected = i;
             }
         }
+
+        for(var j = 0; j < $(this.queue).size(); j++){
+            if(this.passouPeloPosto)
+            {
+                if(this.pontoFim.getId() == this.queue[j].getId())
+                {
+                    selected = j;
+                }                            
+            }
+            if(!this.passouPeloPosto)
+            {
+                if(this.pontoPosto.getId() == this.queue[j].getId())
+                {
+                    selected = j;
+                }                            
+            }            
+        }
+        
         return this.queue[selected]
     }
     
@@ -313,14 +372,13 @@ ASearch = (function(){
             this.calculateRealCost(node);
             //this.currentNode.clearArcos(); 
             //this.currentNode.addArco(node);        
-            node.clearArcos();
-            node.addArco(this.currentNode);
+            //this.currentNode.clearArcos();
+            node.clearArcos_Back();
+            node.addArco_back(this.currentNode);
             
-            if(this.pontoPosto.getPosX() == node.getPosX() 
-                    && this.pontoPosto.getPosY() == node.getPosY()){
-                this.passouPeloPosto = true;
-                //resetando o coseQueue por causa que pode passar no mesmo ponto na volta
-                //this.closedQueue = []
+            if(!this.passouPeloPosto)
+            {
+                this.currentNode.addArco(node);    
             }
             
             
@@ -332,7 +390,7 @@ ASearch = (function(){
         
         //TODO: (Leo) Continuar...
         return;
-        /*
+    /*
         if(this.node.getRealCost() < this.currentNode.getRealCost())
         {
                
